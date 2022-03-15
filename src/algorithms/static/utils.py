@@ -1,7 +1,7 @@
 import networkx as nx
 
 
-def calc_ranku(G: nx.DiGraph) -> None:
+def set_ranku(G: nx.DiGraph) -> None:
     def _ranku(node_i):
         if(node_i in exit_nodes):
             G.nodes[node_i]['ranku'] = G.nodes[node_i]['exec']
