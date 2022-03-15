@@ -3,6 +3,7 @@ import networkx as nx
 from typing import Tuple
 
 from file_handling_helper import read_dag
+from dag_utils import calc_ranku
 from debug_write_dag import write_dag
 
 
@@ -21,6 +22,7 @@ def option_parser() -> Tuple[argparse.FileType]:
 
 def main(dag_file_path):
     G = read_dag(dag_file_path)
+    calc_ranku(G)
     write_dag(G)
 
 
