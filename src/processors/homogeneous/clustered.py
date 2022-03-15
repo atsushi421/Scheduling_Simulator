@@ -5,7 +5,6 @@ class Core:
     def __init__(self, cc_id: int, core_id: int):
         self.cc_id = cc_id
         self.core_id = core_id
-        self.log = []
         self.idle = True
         self.proc_node = -1
         self.remain_proc_time = 0

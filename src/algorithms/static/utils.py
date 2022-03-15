@@ -1,3 +1,4 @@
+import copy
 import networkx as nx
 
 
@@ -20,3 +21,11 @@ def set_ranku(G: nx.DiGraph) -> None:
     exit_nodes = [v for v, d in G.out_degree() if d == 0]
     for entry_node in entry_nodes:
         _ranku(entry_node)
+
+
+def get_ave_comm_dag(dag: nx.DiGraph, inout_ratio: float) -> nx.DiGraph:
+    G = copy.deepcopy(dag)
+    for s, t in G.edges:
+        G.edges[s, t]['comm'] = int((G.edges[s, t]['comm'] + G.edges[s, t]['comm']*inout_ratio) / 2)
+
+    return G
