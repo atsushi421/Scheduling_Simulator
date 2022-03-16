@@ -5,3 +5,8 @@ class Error(Exception):
 class UnimplementedError(Error):
     def __init__(self, message: str) -> None:
         self.message = message
+
+
+class AlgorithmError(Error):
+    def __init__(self, message: str) -> None:
+        self.message = message

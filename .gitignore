@@ -132,4 +132,5 @@ dmypy.json
 .vscode/
 DAGs/
 test.png
+test.json
 debug_write_dag.py

@@ -5,6 +5,7 @@ from typing import Tuple
 from file_handling_helper import read_dag
 from processors.homogeneous.clustered import CluesteredProcessor
 from algorithms.static.HEFT import HEFT_cluster
+from scheduler.list_scheduler import ListSchedulerToClusteredProcessor
 from debug_write_dag import write_dag
 
 
@@ -50,13 +51,13 @@ def main(dag_file_path, alg, num_clusters, num_cores, inout_ratio):
 
     if(alg == 'HEFT'):
         sched_list = HEFT_cluster(G, P.inout_ratio)
-        print(sched_list)
+        S = ListSchedulerToClusteredProcessor(G, P, sched_list)
     elif(alg == 'QL-HEFT'):
         pass  # TODO
     elif(alg == 'CQGA-HEFT'):
         pass  # TODO
-    
-    write_dag(G)
+
+    S.schedule()
 
 
 if __name__ == '__main__':
