@@ -40,7 +40,7 @@ class CQGAHEFT(GeneticAlgorithm):
                 G.edges[self._correspond_gene_edge[str(i)]]['comm'] *= self.P.inout_ratio
 
         qlheft = QLHEFT(G, self.alpha, self.gamma)
-        qlheft.learn(100)  # HACK
+        qlheft.learn(1000)  # HACK
 
         return qlheft.get_sched_list()
 

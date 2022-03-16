@@ -1,4 +1,5 @@
 import argparse
+import os
 import networkx as nx
 from typing import Tuple
 
@@ -17,7 +18,8 @@ def option_parser() -> Tuple[str, str, int, int, float, bool]:
               --algorithm [<algorithm name>] \
               --num_of_clusters [<int>] \
               --num_of_cores [<int>] \
-              --inout_ratio [<float>]'
+              --inout_ratio [<float>] \
+              --dest_dir [path of dir]'
 
     arg_parser = argparse.ArgumentParser(usage=usage)
     arg_parser.add_argument('--dag_file_path',
@@ -42,12 +44,16 @@ def option_parser() -> Tuple[str, str, int, int, float, bool]:
                             type=float,
                             help='Ratio of communication time outside the cluster to \
                                   communication time inside the cluster for clustered many-core processor.')
+    arg_parser.add_argument('--dest_file_path',
+                            required=True,
+                            type=str,
+                            help='path to result file.')
     args = arg_parser.parse_args()
 
-    return args.dag_file_path, args.algorithm, args.num_of_clusters, args.num_of_cores, args.inout_ratio
+    return args.dag_file_path, args.algorithm, args.num_of_clusters, args.num_of_cores, args.inout_ratio, args.dest_file_path
 
 
-def main(dag_file_path, alg, num_clusters, num_cores, inout_ratio):
+def main(dag_file_path, alg, num_clusters, num_cores, inout_ratio, dest_file_path):
     G = read_dag(dag_file_path)
     P = CluesteredProcessor(num_clusters, num_cores, inout_ratio)
 
@@ -56,7 +62,7 @@ def main(dag_file_path, alg, num_clusters, num_cores, inout_ratio):
         S = ListSchedulerToClusteredProcessor(G, P, sched_list)
     elif(alg == 'QL-HEFT'):
         qlheft = QLHEFTToClusteredProcessor(G, 1.0, 0.2, P.inout_ratio)  # HACK
-        qlheft.learn(100)  # HACK
+        qlheft.learn(1000)  # HACK
         sched_list = qlheft.get_sched_list()
         S = ListSchedulerToClusteredProcessor(G, P, sched_list)
     elif(alg == 'CQGA-HEFT'):
@@ -65,10 +71,13 @@ def main(dag_file_path, alg, num_clusters, num_cores, inout_ratio):
         sched_list = cqgaheft.get_sched_list()
         S = ListSchedulerToClusteredProcessor(G, P, sched_list)
 
+    # Write result  # HACK
     S.schedule()
-    print(S.get_makespan())
+    f = open(dest_file_path, "a")
+    f.write(os.path.basename(dag_file_path) + "\t" + str(S.get_makespan()) + "\n")
+    f.close()
 
 
 if __name__ == '__main__':
-    dag_file_path, alg, num_clusters, num_cores, inout_ratio = option_parser()
-    main(dag_file_path, alg, num_clusters, num_cores, inout_ratio)
+    dag_file_path, alg, num_clusters, num_cores, inout_ratio, dest_dir = option_parser()
+    main(dag_file_path, alg, num_clusters, num_cores, inout_ratio, dest_dir)
