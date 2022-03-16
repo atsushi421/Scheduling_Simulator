@@ -9,9 +9,8 @@ from .utils import set_ranku, convert_to_ave_comm_dag, convert_to_virtual_entry_
 
 
 class QLHEFT:
-    def __init__(self, dag: nx.DiGraph, inout_ratio: float, alpha: float, gamma: float):
+    def __init__(self, dag: nx.DiGraph, alpha: float, gamma: float):
         self.G = copy.deepcopy(dag)
-        convert_to_ave_comm_dag(self.G, inout_ratio)
         self._virtual_entry_i = convert_to_virtual_entry_dag(self.G)
         self._virtual_exit_i = convert_to_virtual_exit_dag(self.G)
         set_ranku(self.G)
@@ -63,4 +62,38 @@ class QLHEFT:
         self.learning_log['episode'] = episode
 
     def get_sched_list(self) -> List[int]:
-        pass  # TODO
+        # Initial setting
+        current_state = self._virtual_entry_i
+        sched_list = [self._virtual_entry_i]
+        choosable_nodes = set(self.G.succ[current_state])
+
+        while(len(sched_list) != self.G.number_of_nodes()):
+            # Choice node
+            max_qv = -1
+            max_qv_action = None
+            for choosable_node in choosable_nodes:
+                if(self.q_table.at[current_state, choosable_node] > max_qv):
+                    max_qv = self.q_table.at[current_state, choosable_node]
+                    max_qv_action = choosable_node
+            choosable_nodes.remove(max_qv_action)
+            sched_list.append(max_qv_action)
+            current_state = max_qv_action
+            
+            # Update choosable_nodes
+            add_options = set(self.G.succ[current_state]) - set(sched_list) - choosable_nodes
+            for add_option in add_options:
+                if(not (set(self.G.pred[add_option]) <= set(sched_list))):
+                    continue
+                choosable_nodes.add(add_option)
+
+        # Remove virtual nodes
+        sched_list.remove(self._virtual_entry_i)
+        sched_list.remove(self._virtual_exit_i)
+
+        return sched_list
+
+
+class QLHEFTToClusteredProcessor(QLHEFT):
+    def __init__(self, dag: nx.DiGraph, alpha: float, gamma: float, inout_ratio: float):
+        super().__init__(dag, alpha, gamma)
+        convert_to_ave_comm_dag(self.G, inout_ratio)
