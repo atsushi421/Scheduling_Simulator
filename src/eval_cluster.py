@@ -6,6 +6,7 @@ from file_handling_helper import read_dag
 from processors.homogeneous.cluster import CluesteredProcessor
 from algorithms.static.HEFT import HEFT_cluster
 from algorithms.static.QLHEFT import QLHEFTToClusteredProcessor
+from algorithms.static.CQGAHEFT import CQGAHEFT
 from scheduler.list_scheduler import ListSchedulerToClusteredProcessor
 from debug_write_dag import write_dag
 
@@ -54,12 +55,15 @@ def main(dag_file_path, alg, num_clusters, num_cores, inout_ratio):
         sched_list = HEFT_cluster(G, P.inout_ratio)
         S = ListSchedulerToClusteredProcessor(G, P, sched_list)
     elif(alg == 'QL-HEFT'):
-        QLHEFT = QLHEFTToClusteredProcessor(G, 1.0, 0.2, P.inout_ratio)  # HACK
-        QLHEFT.learn(1000)  # HACK
-        sched_list = QLHEFT.get_sched_list()
+        qlheft = QLHEFTToClusteredProcessor(G, 1.0, 0.2, P.inout_ratio)  # HACK
+        qlheft.learn(100)  # HACK
+        sched_list = qlheft.get_sched_list()
         S = ListSchedulerToClusteredProcessor(G, P, sched_list)
     elif(alg == 'CQGA-HEFT'):
-        pass  # TODO
+        cqgaheft = CQGAHEFT(G, 8, 10, 0.001, 1.0, 0.2, P)  # HACK
+        cqgaheft.evolution()
+        sched_list = cqgaheft.get_sched_list()
+        S = ListSchedulerToClusteredProcessor(G, P, sched_list)
 
     S.schedule()
     print(S.get_makespan())
