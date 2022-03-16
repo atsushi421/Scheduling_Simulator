@@ -3,8 +3,9 @@ import networkx as nx
 from typing import Tuple
 
 from file_handling_helper import read_dag
-from processors.homogeneous.clustered import CluesteredProcessor
+from processors.homogeneous.cluster import CluesteredProcessor
 from algorithms.static.HEFT import HEFT_cluster
+from algorithms.static.QLHEFT import QLHEFT
 from scheduler.list_scheduler import ListSchedulerToClusteredProcessor
 from debug_write_dag import write_dag
 
@@ -53,11 +54,14 @@ def main(dag_file_path, alg, num_clusters, num_cores, inout_ratio):
         sched_list = HEFT_cluster(G, P.inout_ratio)
         S = ListSchedulerToClusteredProcessor(G, P, sched_list)
     elif(alg == 'QL-HEFT'):
-        pass  # TODO
+        qlheft = QLHEFT(G, P.inout_ratio, 1.0, 0.2)
+        qlheft.learn(1000)
+        print(qlheft.q_table)
     elif(alg == 'CQGA-HEFT'):
         pass  # TODO
 
     S.schedule()
+    print(S.get_makespan())
 
 
 if __name__ == '__main__':
