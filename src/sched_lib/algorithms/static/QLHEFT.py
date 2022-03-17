@@ -2,7 +2,7 @@ import random
 import copy
 import time
 import networkx as nx
-import pandas as pd
+import numpy as np
 from typing import List
 
 from  sched_lib.algorithms.dag_utils import set_ranku, convert_to_ave_comm_dag, convert_to_virtual_entry_dag, convert_to_virtual_exit_dag
@@ -16,8 +16,7 @@ class QLHEFT:
         set_ranku(self.G)
         self.alpha = alpha
         self.gamma = gamma
-        self.q_table = pd.DataFrame(index=range(self.G.number_of_nodes()), columns=range(self.G.number_of_nodes()))
-        self.q_table.fillna(0, inplace=True)
+        self.q_table = np.zeros((self.G.number_of_nodes(), self.G.number_of_nodes()))
         self.learning_log = {}
 
     def learn(self, max_episode: int) -> None:
@@ -48,14 +47,13 @@ class QLHEFT:
                     choosable_nodes.add(add_option)
 
                 # Update Q_table
-                current_state_series = self.q_table.loc[current_state, :]
-                max_qv_action = current_state_series.idxmax()
-                self.q_table.at[before_state, choose_node] = (self.q_table.at[before_state, choose_node]
-                                                              + self.alpha
-                                                              * (self.G.nodes[choose_node]['ranku']
-                                                                 + self.gamma
-                                                                 * self.q_table.at[current_state, max_qv_action]
-                                                                 - self.q_table.at[before_state, choose_node]))
+                max_qv_action = np.argmax(self.q_table[current_state])
+                self.q_table[before_state, choose_node] = (self.q_table[before_state, choose_node]
+                                                           + self.alpha
+                                                           * (self.G.nodes[choose_node]['ranku']
+                                                              + self.gamma
+                                                              * self.q_table[current_state, max_qv_action]
+                                                              - self.q_table[before_state, choose_node]))
 
         # write learning_log
         self.learning_log['duration'] = time.time() - learning_start_time
@@ -72,8 +70,8 @@ class QLHEFT:
             max_qv = -1
             max_qv_action = None
             for choosable_node in choosable_nodes:
-                if(self.q_table.at[current_state, choosable_node] > max_qv):
-                    max_qv = self.q_table.at[current_state, choosable_node]
+                if(self.q_table[current_state, choosable_node] > max_qv):
+                    max_qv = self.q_table[current_state, choosable_node]
                     max_qv_action = choosable_node
             choosable_nodes.remove(max_qv_action)
             sched_list.append(max_qv_action)
