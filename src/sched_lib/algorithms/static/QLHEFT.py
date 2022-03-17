@@ -41,7 +41,7 @@ class QLHEFT:
                 current_state = choose_node
 
                 # Update choosable_nodes
-                add_options = set(self.G.succ[current_state]) - choose_nodes - choosable_nodes
+                add_options = set(self.G.succ[current_state]) - choosable_nodes
                 for add_option in add_options:
                     if(not (set(self.G.pred[add_option]) <= choose_nodes)):
                         continue

@@ -72,7 +72,6 @@ def main(dag_file_path, alg, num_clusters, num_cores, inout_ratio, dest_file_pat
 
     # Write result  # HACK
     S.schedule()
-    S.dump_log_to_json('test')
     f = open(dest_file_path, "a")
     f.write(os.path.basename(dag_file_path) + "\t" + str(S.get_makespan()) + "\n")
     f.close()

@@ -45,6 +45,11 @@ class ListScheduler(metaclass=ABCMeta):
 
         return max(ft_list)
 
+    def get_cpu_usage(self) -> float:
+        sum_exec = 0
+        for node_i in range(self.G.number_of_nodes()):
+            sum_exec += self.G.nodes[node_i]['exec']
+
 
 class ListSchedulerToClusteredProcessor(ListScheduler):
     def __init__(self, dag: nx.DiGraph, processor, sched_list: List[int]):

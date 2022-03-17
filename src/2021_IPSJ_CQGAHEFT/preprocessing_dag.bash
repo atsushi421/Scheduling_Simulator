@@ -14,11 +14,11 @@ function show_usage () {
 
 
 ### initialize option variables
-DAG_DIR="${PWD}/../../DAGs/tgff/50"
+DAG_DIR="${PWD}/../../DAGs/RDG/2021_IPSJ_CQGAHEFT"
 NUM_OF_CHOSEN_NODES=0
 SPLIT_NUM=0
-EXEC_FACTOR=0
-COMM_FACTOR=0
+EXEC_FACTOR=1.0
+COMM_FACTOR=1.0
 PYTHON_SCRIPT_DIR="${PWD}/../"
 
 
@@ -78,13 +78,13 @@ do
 done
 wait
 
-DAG_FILES=${DAG_DIR}/*.dot
-for filepath in ${DAG_FILES}
-do
-    python3 ${PYTHON_SCRIPT_DIR}/change_cost.py --dag_file_path ${filepath} \
-                                                --exec_factor ${EXEC_FACTOR} \
-                                                --comm_factor ${COMM_FACTOR}
-done
+# DAG_FILES=${DAG_DIR}/*.dot
+# for filepath in ${DAG_FILES}
+# do
+#     python3 ${PYTHON_SCRIPT_DIR}/change_cost.py --dag_file_path ${filepath} \
+#                                                 --exec_factor ${EXEC_FACTOR} \
+#                                                 --comm_factor ${COMM_FACTOR}
+# done
 
 
 if [ $? -ne 0 ]; then

@@ -16,7 +16,7 @@ function show_usage () {
 
 
 ### initialize option variables
-DAG_DIR="${PWD}/../../DAGs/tgff/preprocessed"
+DAG_DIR="${PWD}/DAGs/dot"
 ALGORITHM=""
 NUM_OF_CLUSTERS=0
 START=0
