@@ -49,8 +49,6 @@ def read_dag(dag_file_path: str) -> nx.DiGraph:
                 G.add_edge(source, target, comm=type_cost[int(line_list[7])])
         f.close()
 
-        print(dict(G.nodes))
-        print(dict(G.edges))
         return G
 
     if(ext == '.yaml'):

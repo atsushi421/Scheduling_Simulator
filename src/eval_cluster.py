@@ -65,13 +65,14 @@ def main(dag_file_path, alg, num_clusters, num_cores, inout_ratio, dest_file_pat
         sched_list = qlheft.get_sched_list()
         S = ListSchedulerToClusteredProcessor(G, P, sched_list)
     elif(alg == 'CQGA-HEFT'):
-        cqgaheft = CQGAHEFT(G, 8, 10, 0.001, 1.0, 0.2, P)  # HACK
+        cqgaheft = CQGAHEFT(G, 8, 8, 0.001, 1.0, 0.2, P)  # HACK
         cqgaheft.evolution()
         sched_list = cqgaheft.get_sched_list()
         S = ListSchedulerToClusteredProcessor(G, P, sched_list)
 
     # Write result  # HACK
     S.schedule()
+    S.dump_log_to_json('test')
     f = open(dest_file_path, "a")
     f.write(os.path.basename(dag_file_path) + "\t" + str(S.get_makespan()) + "\n")
     f.close()
