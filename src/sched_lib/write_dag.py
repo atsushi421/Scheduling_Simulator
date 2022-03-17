@@ -3,7 +3,11 @@ import networkx as nx
 from networkx.readwrite import json_graph
 
 
-def write_dag(G: nx.DiGraph) -> None:
+def write_dag(G: nx.DiGraph, dest_dir: str, filename: str) -> None:
+    ### output dot file
+    nx.drawing.nx_pydot.write_dot(G, f'{dest_dir}/{filename}.dot')
+
+    ### output png file
     # node label
     for node_i in range(G.number_of_nodes()):
         G.nodes[node_i]['label'] = f'[{node_i}]\n' \
@@ -19,4 +23,4 @@ def write_dag(G: nx.DiGraph) -> None:
                 f'{G.edges[start_i, end_i]["comm"]}'
 
     pdot = nx.drawing.nx_pydot.to_pydot(G)
-    pdot.write_png('test.png')
+    pdot.write_png(f'{dest_dir}/{filename}.png')

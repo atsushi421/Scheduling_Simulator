@@ -49,15 +49,25 @@ def read_dag(dag_file_path: str) -> nx.DiGraph:
                 G.add_edge(source, target, comm=type_cost[int(line_list[7])])
         f.close()
 
+        print(dict(G.nodes))
+        print(dict(G.edges))
         return G
-
-
 
     if(ext == '.yaml'):
         pass  # TODO
     if(ext == '.json'):
         pass  # TODO
     if(ext == '.dot'):
-        pass  # TODO
+        tmp_dag = nx.drawing.nx_pydot.read_dot(dag_file_path)
+        tmp_dag = nx.DiGraph(tmp_dag)
+        tmp_dag.remove_node('\\n')
+
+        G = nx.DiGraph()
+        for node_i in tmp_dag.nodes:
+            G.add_node(int(node_i), exec=int(tmp_dag.nodes[node_i]['exec']))
+        for s, t in tmp_dag.edges:
+            G.add_edge(int(s), int(t), comm=int(tmp_dag.edges[s, t]['comm']))
+
+        return G
 
     raise UnimplementedError('')
