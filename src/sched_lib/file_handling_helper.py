@@ -1,7 +1,7 @@
 import networkx as nx
 import os
 
-from exceptions import UnimplementedError
+from .exceptions import UnimplementedError
 
 
 def read_dag(dag_file_path: str) -> nx.DiGraph:

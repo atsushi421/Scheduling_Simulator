@@ -2,7 +2,7 @@ import copy
 import networkx as nx
 from typing import List
 
-from .utils import set_ranku, convert_to_ave_comm_dag
+from  sched_lib.algorithms.dag_utils import set_ranku, convert_to_ave_comm_dag
 
 
 def HEFT_cluster(dag: nx.DiGraph, inout_ratio: float) -> List[int]:

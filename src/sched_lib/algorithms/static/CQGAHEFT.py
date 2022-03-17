@@ -6,11 +6,11 @@ import networkx as nx
 import pandas as pd
 from typing import List
 
-from .utils import set_ranku, convert_to_virtual_entry_dag, convert_to_virtual_exit_dag
-from .genetic_algorithm import Chromosome, GeneticAlgorithm
-from processors.homogeneous.cluster import CluesteredProcessor
+from  sched_lib.algorithms.dag_utils import set_ranku, convert_to_virtual_entry_dag, convert_to_virtual_exit_dag
+from  sched_lib.algorithms.genetic_algorithm import Chromosome, GeneticAlgorithm
+from  sched_lib.processors.homogeneous.cluster import CluesteredProcessor
 from .QLHEFT import QLHEFT
-from scheduler.list_scheduler import ListSchedulerToClusteredProcessor
+from  sched_lib.scheduler.list_scheduler import ListSchedulerToClusteredProcessor
 
 
 class CQGAHEFT(GeneticAlgorithm):

@@ -3,13 +3,12 @@ import os
 import networkx as nx
 from typing import Tuple
 
-from file_handling_helper import read_dag
-from processors.homogeneous.cluster import CluesteredProcessor
-from algorithms.static.HEFT import HEFT_cluster
-from algorithms.static.QLHEFT import QLHEFTToClusteredProcessor
-from algorithms.static.CQGAHEFT import CQGAHEFT
-from scheduler.list_scheduler import ListSchedulerToClusteredProcessor
-from debug_write_dag import write_dag
+from sched_lib.file_handling_helper import read_dag
+from sched_lib.processors.homogeneous.cluster import CluesteredProcessor
+from sched_lib.algorithms.static.HEFT import HEFT_cluster
+from sched_lib.algorithms.static.QLHEFT import QLHEFTToClusteredProcessor
+from sched_lib.algorithms.static.CQGAHEFT import CQGAHEFT
+from sched_lib.scheduler.list_scheduler import ListSchedulerToClusteredProcessor
 
 
 def option_parser() -> Tuple[str, str, int, int, float, bool]:
@@ -19,7 +18,7 @@ def option_parser() -> Tuple[str, str, int, int, float, bool]:
               --num_of_clusters [<int>] \
               --num_of_cores [<int>] \
               --inout_ratio [<float>] \
-              --dest_dir [path of dir]'
+              --dest_file path [path to result file]'
 
     arg_parser = argparse.ArgumentParser(usage=usage)
     arg_parser.add_argument('--dag_file_path',
@@ -79,5 +78,5 @@ def main(dag_file_path, alg, num_clusters, num_cores, inout_ratio, dest_file_pat
 
 
 if __name__ == '__main__':
-    dag_file_path, alg, num_clusters, num_cores, inout_ratio, dest_dir = option_parser()
-    main(dag_file_path, alg, num_clusters, num_cores, inout_ratio, dest_dir)
+    dag_file_path, alg, num_clusters, num_cores, inout_ratio, dest_file_path = option_parser()
+    main(dag_file_path, alg, num_clusters, num_cores, inout_ratio, dest_file_path)

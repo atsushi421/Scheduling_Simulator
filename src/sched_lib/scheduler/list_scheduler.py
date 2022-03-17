@@ -5,7 +5,7 @@ import networkx as nx
 from typing import List, Union
 from abc import ABCMeta, abstractmethod
 
-from exceptions import AlgorithmError
+from sched_lib.exceptions import AlgorithmError
 
 
 class ListScheduler(metaclass=ABCMeta):

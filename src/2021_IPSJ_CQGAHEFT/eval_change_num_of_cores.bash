@@ -16,14 +16,14 @@ function show_usage () {
 
 
 ### initialize option variables
-DAG_DIR="${PWD}/../DAGs/tgff"
+DAG_DIR="${PWD}/../../DAGs/tgff/100"
 ALGORITHM=""
 NUM_OF_CLUSTERS=0
 START=0
 END=0
 INOUT_RATIO=0
 DEST_DIR="${PWD}/result/change_num_of_cores"
-PYTHON_SCRIPT_DIR="${PWD}/../src"
+PYTHON_SCRIPT_DIR="${PWD}/../"
 
 
 ### parse command options
@@ -128,6 +128,9 @@ do
                                                      --inout_ratio ${INOUT_RATIO} \
                                                      --dest_file_path ${DEST_FILE}
     done
+
+    # sort
+    python3 ${PYTHON_SCRIPT_DIR}/sort_result_by_dag_idx.py --result_file_path ${DEST_FILE}
 done
 
 
