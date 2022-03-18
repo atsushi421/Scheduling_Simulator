@@ -18,16 +18,27 @@ class QLHEFT:
         self.alpha = alpha
         self.gamma = gamma
         self.q_table = np.zeros((self.G.number_of_nodes(), self.G.number_of_nodes()))
+        self._node_info_dict = self._get_node_info_dict()
         self.learning_log = {}
 
+    def _get_node_info_dict(self) -> dict:
+        node_info_dict = {}
+        for node_i in range(self.G.number_of_nodes()):
+            node_info_dict[str(node_i)] = {'succs': list(self.G.succ[node_i]),
+                                           'preds': set(self.G.pred[node_i]),
+                                           'ranku': self.G.nodes[node_i]['ranku']}
+
+        return node_info_dict
+
     def learn(self, max_episode: int) -> None:
+        
         learning_start_time = time.time()
 
         for _e in range(max_episode):
             # Initial setting
             current_state = self._virtual_entry_i
             choose_nodes = {self._virtual_entry_i}
-            choosable_nodes = list(self.G.succ[current_state])
+            choosable_nodes = copy.copy(self._node_info_dict[str(current_state)]['succs'])
 
             # Learning
             for _k in range(self.G.number_of_nodes() - 1):
@@ -39,16 +50,16 @@ class QLHEFT:
                 current_state = choose_node
 
                 # Update choosable_nodes
-                add_options = set(self.G.succ[current_state]) - set(choosable_nodes)
+                add_options = set(self._node_info_dict[str(current_state)]['succs']) - set(choosable_nodes)
                 for add_option in add_options:
-                    if(set(self.G.pred[add_option]) <= choose_nodes):
+                    if(self._node_info_dict[str(add_option)]['preds'] <= choose_nodes):
                         choosable_nodes.append(add_option)
 
                 # Update Q_table
                 max_qv_action = np.argmax(self.q_table[current_state])
                 self.q_table[before_state, choose_node] = (self.q_table[before_state, choose_node]
                                                            + self.alpha
-                                                           * (self.G.nodes[choose_node]['ranku']
+                                                           * (self._node_info_dict[str(choose_node)]['ranku']
                                                               + self.gamma
                                                               * self.q_table[current_state, max_qv_action]
                                                               - self.q_table[before_state, choose_node]))

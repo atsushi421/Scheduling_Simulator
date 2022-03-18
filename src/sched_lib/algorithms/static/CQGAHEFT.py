@@ -71,7 +71,7 @@ class CQGAHEFT(GeneticAlgorithm):
                 children.append(child2)  
             offspring += children
 
-            self._mutate()
+            # self._mutate()
             self.population = offspring
             self._calc_fitness()
 

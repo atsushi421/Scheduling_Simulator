@@ -61,7 +61,8 @@ def main(dag_file_path, alg, num_clusters, num_cores, inout_ratio, dest_file_pat
         S = ListSchedulerToClusteredProcessor(G, P, sched_list)
     elif(alg == 'QL-HEFT'):
         qlheft = QLHEFTToClusteredProcessor(G, 1.0, 0.2, P.inout_ratio)  # HACK
-        qlheft.learn(10000)  # HACK
+        qlheft.learn(30000)  # HACK
+        print(qlheft.learning_log['duration'])
         sched_list = qlheft.get_sched_list()
         S = ListSchedulerToClusteredProcessor(G, P, sched_list)
     elif(alg == 'CQGA-HEFT'):
