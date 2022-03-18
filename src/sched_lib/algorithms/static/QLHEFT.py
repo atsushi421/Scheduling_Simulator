@@ -3,6 +3,7 @@ import copy
 import time
 import networkx as nx
 import numpy as np
+from numpy import random as rnd
 from typing import List
 
 from  sched_lib.algorithms.dag_utils import set_ranku, convert_to_ave_comm_dag, convert_to_virtual_entry_dag, convert_to_virtual_exit_dag
@@ -21,30 +22,27 @@ class QLHEFT:
 
     def learn(self, max_episode: int) -> None:
         learning_start_time = time.time()
-        episode = 0
 
-        while(episode != max_episode):
+        for _e in range(max_episode):
             # Initial setting
-            episode += 1
             current_state = self._virtual_entry_i
             choose_nodes = {self._virtual_entry_i}
-            choosable_nodes = set(self.G.succ[current_state])
+            choosable_nodes = list(self.G.succ[current_state])
 
             # Learning
-            while(len(choose_nodes) != self.G.number_of_nodes()):
+            for _k in range(self.G.number_of_nodes() - 1):
                 # Choice node
-                choose_node = random.choice(list(choosable_nodes))
-                choosable_nodes.remove(choose_node)
+                rnd.shuffle(choosable_nodes)
+                choose_node = choosable_nodes.pop()
                 choose_nodes.add(choose_node)
                 before_state = current_state
                 current_state = choose_node
 
                 # Update choosable_nodes
-                add_options = set(self.G.succ[current_state]) - choosable_nodes
+                add_options = set(self.G.succ[current_state]) - set(choosable_nodes)
                 for add_option in add_options:
-                    if(not (set(self.G.pred[add_option]) <= choose_nodes)):
-                        continue
-                    choosable_nodes.add(add_option)
+                    if(set(self.G.pred[add_option]) <= choose_nodes):
+                        choosable_nodes.append(add_option)
 
                 # Update Q_table
                 max_qv_action = np.argmax(self.q_table[current_state])
@@ -57,7 +55,6 @@ class QLHEFT:
 
         # write learning_log
         self.learning_log['duration'] = time.time() - learning_start_time
-        self.learning_log['episode'] = episode
 
     def get_sched_list(self) -> List[int]:
         # Initial setting
