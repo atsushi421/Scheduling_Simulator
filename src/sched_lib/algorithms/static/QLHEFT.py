@@ -31,7 +31,6 @@ class QLHEFT:
         return node_info_dict
 
     def learn(self, max_episode: int) -> None:
-        
         learning_start_time = time.time()
 
         for _e in range(max_episode):

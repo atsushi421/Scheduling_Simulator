@@ -68,7 +68,7 @@ class ListSchedulerToClusteredProcessor(ListScheduler):
             if(self._get_allocated_cc_id(pred_i) == cc_id):
                 comm_time = self.G.edges[pred_i, node_i]['comm']
             else:
-                comm_time = self.G.edges[pred_i, node_i]['comm'] * self.P.inout_ratio
+                comm_time = int(self.G.edges[pred_i, node_i]['comm'] * self.P.inout_ratio)
             data_arrival_time = self._get_finish_time(pred_i) + comm_time
             if(data_arrival_time > latest_data_arrival_time):
                 latest_data_arrival_time = data_arrival_time

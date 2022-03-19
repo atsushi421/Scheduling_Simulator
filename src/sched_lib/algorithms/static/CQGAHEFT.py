@@ -37,10 +37,10 @@ class CQGAHEFT(GeneticAlgorithm):
         G = copy.deepcopy(self.G)
         for i, v in enumerate(chromosome.gene_list):
             if(v == 1):
-                G.edges[self._correspond_gene_edge[str(i)]]['comm'] *= self.P.inout_ratio
+                G.edges[self._correspond_gene_edge[str(i)]]['comm'] = int(G.edges[self._correspond_gene_edge[str(i)]]['comm'] * self.P.inout_ratio)
 
         qlheft = QLHEFT(G, self.alpha, self.gamma)
-        qlheft.learn(10000)  # HACK
+        qlheft.learn(20000)
 
         return qlheft.get_sched_list()
 

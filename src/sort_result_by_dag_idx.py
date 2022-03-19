@@ -1,5 +1,6 @@
 import argparse
 import os
+import csv
 from typing import Tuple
 
 
@@ -20,11 +21,12 @@ def option_parser() -> str:
 def main(result_file_path):
     # Read
     f = open(result_file_path, 'r')
+    reader = csv.reader(f)
+    header = next(reader)
     dag_info_header = None
     dag_ext = None
     line_dict = {}
-    for line in f:
-        line_list = line.split()
+    for line_list in reader:
         dag_info = line_list[0].split('_')
         dag_idx, dag_ext = os.path.splitext(dag_info.pop(-1))
         dag_info_header = dag_info
@@ -38,9 +40,10 @@ def main(result_file_path):
     # Write
     f = open(result_file_path, 'w')
     dag_info_header = '_'.join(dag_info_header)
+    f.write(','.join(header) + '\n')
     for dag_i, results in sorted_by_dag_idx:
-        result_str = '\t'.join(results)
-        f.write(f'{dag_info_header}_{dag_i}{dag_ext}\t{result_str}\n')
+        result_str = ','.join(results)
+        f.write(f'{dag_info_header}_{dag_i}{dag_ext},{result_str}\n')
     f.close()
 
 

@@ -4,30 +4,32 @@
 ### echo usage
 function show_usage () {
     echo "Usage: $0 [-h]"
-    echo "          [--dag_dir <path of dag dir>]"
+    echo "          [--root_dag_dir <path of dag dir>]"
     echo "          [-a <algorithm name> or --algorithm <algorithm name>]"
     echo "          [--num_of_clusters <int>]"
-    echo "          [-s <int> or --start_num_of_cores <int>]"
-    echo "          [-e <int> or --end_num_of_cores <int>]"
-    echo "          [-r <float> or --inout_ratio <float>]"
+    echo "          [--num_of_cores <int>]"
+    echo "          [--inout_ratio <int>]"
+    echo "          [--write_duration]"
+    echo "          [--write_makespan]"
     echo "          [-d <path of dir> or --dest_dir <path of dir>]"
     exit 0;
 }
 
 
 ### initialize option variables
-DAG_DIR="${PWD}/DAGs/dot"
+ROOT_DAG_DIR="${PWD}/DAGs/"
 ALGORITHM=""
 NUM_OF_CLUSTERS=0
-START=0
-END=0
+NUM_OF_CORES=0
 INOUT_RATIO=0
-DEST_DIR="${PWD}/result/change_num_of_cores"
+WRITE_DURATION=""
+WRITE_MAKESPAN=""
+DEST_DIR="${PWD}/result/change_nun_of_tasks"
 PYTHON_SCRIPT_DIR="${PWD}/../"
 
 
 ### parse command options
-OPT=`getopt -o ha:s:e:r:d: -l help,dag_dir:,algorithm:,num_of_clusters:,start_num_of_cores:,end_num_of_cores:,inout_ratio:,dest_dir: -- "$@"`
+OPT=`getopt -o ha:d: -l help,root_dag_dir:,algorithm:,num_of_clusters:,num_of_cores:,inout_ratio:,write_duration,write_makespan,dest_dir: -- "$@"`
 
 if [ $? != 0 ] ; then
     echo "[Error] Option parsing processing is failed." 1>&2
@@ -44,8 +46,8 @@ do
         show_usage;
         shift
         ;;
-    --dag_dir)
-        DAG_DIR="$2"
+    --root_dag_dir)
+        ROOT_DAG_DIR="$2"
         shift 2
         ;;
     -a | --algorithm)
@@ -56,17 +58,21 @@ do
         NUM_OF_CLUSTERS=$2
         shift 2
         ;;
-    -s | --start_num_of_cores)
-        START=$2
+    --num_of_cores)
+        NUM_OF_CORES=$2
         shift 2
         ;;
-    -e | --end_num_of_cores)
-        END=$2
+    --inout_ratio)
+        INOUT_RATIO="$2"
         shift 2
         ;;
-    -r | --inout_ratio)
-        INOUT_RATIO=$2
-        shift 2
+    --write_duration)
+        WRITE_DURATION="--write_duration"
+        shift
+        ;;
+    --write_makespan)
+        WRITE_MAKESPAN="--write_makespan"
+        shift
         ;;
     -d | --dest-dir)
         DEST_DIR="$2/change_num_of_cores"
@@ -81,9 +87,19 @@ done
 
 
 ### evaluation
-for num_of_cores in `seq ${START} ${END}`
+children=${ROOT_DAG_DIR}/*
+DAG_DIRS=()
+for child in ${children}
 do
-    DEST_FILE="${DEST_DIR}/${num_of_cores}/${ALGORITHM}.csv"
+    if [ -d ${child} ]; then
+        DAG_DIRS+=( "${child}" )
+    fi
+done
+
+for DAG_DIR in "${DAG_DIRS[@]}"
+do
+    echo ${DAG_DIR}
+    DEST_FILE="${DEST_DIR}/$(basename ${DAG_DIR})/${ALGORITHM}.csv"
 
     # check dest file exist
     if [ -e "${DEST_FILE}" ]; then
@@ -108,7 +124,7 @@ do
         fi
     fi
 
-    # make destination directory
+    # make destination directory & write columns
     if [[ ! -e "${DEST_FILE}" || ${INP} =~ [yY] ]]; then
         mkdir -p "$(dirname "${DEST_FILE}")" && touch "${DEST_FILE}"
         if [ $? -ne 0 ]; then
@@ -117,22 +133,33 @@ do
         fi
     fi
 
+    # write columns
+    COLUMNS="Filename"
+    if [ -n ${WRITE_DURATION} ]; then
+        COLUMNS+=",Duration"
+    fi
+    if [ -n ${WRITE_MAKESPAN} ]; then
+        COLUMNS+=",Makespan"
+    fi
+    echo "${COLUMNS}" >> ${DEST_FILE}
+
     # eval command
     DAG_FILES=${DAG_DIR}/*
     for filepath in ${DAG_FILES}
     do
         python3 ${PYTHON_SCRIPT_DIR}/eval_cluster.py --dag_file_path ${filepath} \
-                                                     --algorithm ${ALGORITHM} \
-                                                     --num_of_clusters ${NUM_OF_CLUSTERS} \
-                                                     --num_of_cores ${num_of_cores} \
-                                                     --inout_ratio ${INOUT_RATIO} \
-                                                     --dest_file_path ${DEST_FILE}
+                                                    --algorithm ${ALGORITHM} \
+                                                    --num_of_clusters ${NUM_OF_CLUSTERS} \
+                                                    --num_of_cores ${NUM_OF_CORES} \
+                                                    --inout_ratio "${INOUT_RATIO}" \
+                                                    ${WRITE_MAKESPAN} \
+                                                    ${WRITE_DURATION} \
+                                                    --dest_file_path ${DEST_FILE}
     done
 
     # sort
     python3 ${PYTHON_SCRIPT_DIR}/sort_result_by_dag_idx.py --result_file_path ${DEST_FILE}
 done
-
 
 
 if [ $? -ne 0 ]; then
