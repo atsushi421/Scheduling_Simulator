@@ -136,3 +136,5 @@ test.json
 test.html
 debug_write_dag.py
 result/
+debug.py
+eval.bash
