@@ -1,4 +1,5 @@
 import networkx as nx
+import numpy as np
 
 
 def set_ranku(G: nx.DiGraph) -> None:
@@ -45,3 +46,31 @@ def convert_to_virtual_exit_dag(G: nx.DiGraph) -> int:
         G.add_edge(exit_i, virtual_exit_i, comm=0)
 
     return virtual_exit_i
+
+
+def get_ccr(dag: nx.DiGraph) -> float:
+    sum_comm = 0
+    for s, t in dag.edges:
+        sum_comm += dag.edges[s, t]['comm']
+    ave_comm = sum_comm / dag.number_of_edges()
+    
+    sum_exec = 0
+    for node_i in dag.nodes:
+        sum_exec += dag.nodes[node_i]['exec']
+    ave_exec = sum_exec / dag.number_of_nodes()
+    
+    return ave_comm / ave_exec
+
+
+def convert_to_specified_ccr_dag(G: nx.DiGraph, CCR: float) -> None:
+    while(abs(CCR - (cur_ccr := round(get_ccr(G), 3))) > 0.01):
+        if(cur_ccr > CCR):
+            for s, t in G.edges:
+                G.edges[s, t]['comm'] = int(np.ceil(G.edges[s, t]['comm'] * 0.99))
+            for node_i in G.nodes:
+                G.nodes[node_i]['exec'] = int(np.ceil(G.nodes[node_i]['exec'] * 1.01))
+        else:
+            for s, t in G.edges:
+                G.edges[s, t]['comm'] = int(np.ceil(G.edges[s, t]['comm'] * 1.01))
+            for node_i in G.nodes:
+                G.nodes[node_i]['exec'] = int(np.ceil(G.nodes[node_i]['exec'] * 0.99))

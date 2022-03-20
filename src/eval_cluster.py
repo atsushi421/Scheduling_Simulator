@@ -13,20 +13,11 @@ from sched_lib.algorithms.static.CQGAHEFT import CQGAHEFT
 from sched_lib.algorithms.static.HTSTC import HTSTC
 from sched_lib.algorithms.static.HTSTC import HTSTCListSchedulerToClusteredProcessor
 from sched_lib.scheduler.list_scheduler import ListSchedulerToClusteredProcessor
+from sched_lib.algorithms.dag_utils import convert_to_specified_ccr_dag
 
 
-def option_parser() -> Tuple[str, str, int, int, float, bool]:
-    usage = f'[python] {__file__} \
-              --dag_file_path [<path to dag file>] \
-              --algorithm [<algorithm name>] \
-              --num_of_clusters [<int>] \
-              --num_of_cores [<int>] \
-              --inout_ratio [<float>] \
-              --dest_file path [path to result file] \
-              --write_makespan \
-              --write_duration'
-
-    arg_parser = argparse.ArgumentParser(usage=usage)
+def option_parser():
+    arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('--dag_file_path',
                             required=True,
                             type=str,
@@ -49,6 +40,10 @@ def option_parser() -> Tuple[str, str, int, int, float, bool]:
                             type=float,
                             help='Ratio of communication time outside the cluster to \
                                   communication time inside the cluster for clustered many-core processor.')
+    arg_parser.add_argument('--ccr',
+                            required=False,
+                            type=float,
+                            help='CCR value of DAG.')
     arg_parser.add_argument('--write_makespan',
                             required=False,
                             action='store_true',
@@ -63,11 +58,13 @@ def option_parser() -> Tuple[str, str, int, int, float, bool]:
                             help='path to result file.')
     args = arg_parser.parse_args()
 
-    return args.dag_file_path, args.algorithm, args.num_of_clusters, args.num_of_cores, args.inout_ratio, args.dest_file_path, args.write_makespan, args.write_duration
+    return args.dag_file_path, args.algorithm, args.num_of_clusters, args.num_of_cores, args.inout_ratio, args.ccr, args.dest_file_path, args.write_makespan, args.write_duration
 
 
-def main(dag_file_path, alg, num_clusters, num_cores, inout_ratio, dest_file_path, write_makespan, write_duration):
+def main(dag_file_path, alg, num_clusters, num_cores, inout_ratio, ccr, dest_file_path, write_makespan, write_duration):
     G = read_dag(dag_file_path)
+    if(ccr):
+        convert_to_specified_ccr_dag(G, ccr)
     P = CluesteredProcessor(num_clusters, num_cores, inout_ratio)
     log_str = os.path.basename(dag_file_path)
 
@@ -114,5 +111,5 @@ def main(dag_file_path, alg, num_clusters, num_cores, inout_ratio, dest_file_pat
 
 
 if __name__ == '__main__':
-    dag_file_path, alg, num_clusters, num_cores, inout_ratio, dest_file_path, write_makespan, write_duration = option_parser()
-    main(dag_file_path, alg, num_clusters, num_cores, inout_ratio, dest_file_path, write_makespan, write_duration)
+    dag_file_path, alg, num_clusters, num_cores, inout_ratio, ccr, dest_file_path, write_makespan, write_duration = option_parser()
+    main(dag_file_path, alg, num_clusters, num_cores, inout_ratio, ccr, dest_file_path, write_makespan, write_duration)
