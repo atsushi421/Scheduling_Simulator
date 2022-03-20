@@ -127,3 +127,12 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Add
+.vscode/
+DAGs/
+test.png
+test.json
+test.html
+debug_write_dag.py
+result/
