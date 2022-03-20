@@ -17,7 +17,7 @@ function show_usage () {
 
 
 ### initialize option variables
-DAG_DIR="${PWD}/DAGs/80/dot"
+DAG_DIR="${PWD}/DAGs/80"
 ALGORITHM=""
 NUM_OF_CLUSTERS=0
 NUM_OF_CORES=0

@@ -17,7 +17,7 @@ function show_usage () {
 
 
 ### initialize option variables
-ROOT_DAG_DIR="${PWD}/DAGs/"
+ROOT_DAG_DIR="${PWD}/DAGs"
 ALGORITHM=""
 NUM_OF_CLUSTERS=0
 NUM_OF_CORES=0
@@ -98,7 +98,6 @@ done
 
 for DAG_DIR in "${DAG_DIRS[@]}"
 do
-    echo ${DAG_DIR}
     DEST_FILE="${DEST_DIR}/$(basename ${DAG_DIR})/${ALGORITHM}.csv"
 
     # check dest file exist

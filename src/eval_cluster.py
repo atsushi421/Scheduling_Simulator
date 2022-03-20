@@ -81,14 +81,14 @@ def main(dag_file_path, alg, num_clusters, num_cores, inout_ratio, dest_file_pat
         S.schedule()
     elif(alg == 'QL-HEFT'):
         qlheft = QLHEFTToClusteredProcessor(G, 1.0, 0.2, P.inout_ratio)  # HACK
-        qlheft.learn(20000)
+        qlheft.learn(25000)
         if(write_duration):
             log_str += f',{qlheft.learning_log["duration"]}'
         sched_list = qlheft.get_sched_list()
         S = ListSchedulerToClusteredProcessor(G, P, sched_list)
         S.schedule()
     elif(alg == 'CQGA-HEFT'):
-        cqgaheft = CQGAHEFT(G, 8, 8, 0.0, 1.0, 0.2, P)  # HACK
+        cqgaheft = CQGAHEFT(G, 8, 10, 0.0, 1.0, 0.2, P)  # HACK
         cqgaheft.evolution()
         if(write_duration):
             log_str += f',{cqgaheft.duration}'
@@ -96,9 +96,13 @@ def main(dag_file_path, alg, num_clusters, num_cores, inout_ratio, dest_file_pat
         S = ListSchedulerToClusteredProcessor(G, P, sched_list)
         S.schedule()
     elif(alg == 'HTSTC'):  # HACK
+        start_time = time.time()
         htstc = HTSTC(G, P.inout_ratio)
         sched_list = htstc.get_sched_list()
         S = HTSTCListSchedulerToClusteredProcessor(htstc.G, P, sched_list)
+        duration = time.time() - start_time
+        if(write_duration):
+            log_str += f',{duration}'
         S.schedule_using_task_duplication()
 
     # Write result

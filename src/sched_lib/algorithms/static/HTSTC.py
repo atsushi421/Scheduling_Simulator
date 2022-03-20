@@ -15,7 +15,10 @@ class HTSTCListSchedulerToClusteredProcessor(ListSchedulerToClusteredProcessor):
 
     def schedule_using_task_duplication(self) -> None:
         # Get normal sched_log
-        normal_scheduler = ListSchedulerToClusteredProcessor(self.G, self.P, self.sched_list)
+        G = copy.deepcopy(self.G)
+        P = copy.deepcopy(self.P)
+        sched_list = copy.deepcopy(self.sched_list)
+        normal_scheduler = ListSchedulerToClusteredProcessor(G, P, sched_list)
         normal_scheduler.schedule()
         normal_sched_log = normal_scheduler.sched_log
 
@@ -38,11 +41,8 @@ class HTSTC:
     def __init__(self, dag: nx.DiGraph, inout_ratio: float) -> None:
         self.G = copy.deepcopy(dag)
         self.inout_ratio = inout_ratio
-        convert_to_ave_comm_dag(self.G, inout_ratio)
-        self._task_clustering()
-        set_ranku(self.G)
 
-    def _task_clustering(self) -> None:
+    def task_clustering(self) -> None:
         perform_clustering_flag = True
         while(perform_clustering_flag):
             for node_i in self.G.nodes:
@@ -53,7 +53,7 @@ class HTSTC:
                         if(self.G.edges[node_i, single_succ]['comm'] >= self.G.nodes[single_succ]['exec']):
                             # Perform clustering
                             self.G.nodes[node_i]['exec'] += (self.G.nodes[single_succ]['exec']
-                                                             + int(self.G.edges[node_i, single_succ]['comm'] * 2 / self.inout_ratio))
+                                                             + int(self.G.edges[node_i, single_succ]['comm']))
                             new_succ = list(self.G.succ[single_succ])
                             self.G.add_edge(node_i, new_succ[0], comm=self.G.edges[single_succ, new_succ[0]]['comm'])
                             self.G.remove_node(single_succ)
@@ -72,6 +72,8 @@ class HTSTC:
                 self.G.nodes[node_i]['pre'] = 0
 
     def get_sched_list(self) -> List[int]:
+        self.task_clustering()
+        set_ranku(self.G)
         self._set_pre()
         pre_dict = nx.get_node_attributes(self.G, 'pre')
         sorted_by_pre = sorted(pre_dict.items(),
