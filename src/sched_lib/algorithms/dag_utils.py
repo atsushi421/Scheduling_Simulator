@@ -66,11 +66,11 @@ def convert_to_specified_ccr_dag(G: nx.DiGraph, CCR: float) -> None:
     while(abs(CCR - (cur_ccr := round(get_ccr(G), 3))) > 0.01):
         if(cur_ccr > CCR):
             for s, t in G.edges:
-                G.edges[s, t]['comm'] = int(np.ceil(G.edges[s, t]['comm'] * 0.99))
+                G.edges[s, t]['comm'] = int(np.ceil(G.edges[s, t]['comm'] * 0.98))
             for node_i in G.nodes:
-                G.nodes[node_i]['exec'] = int(np.ceil(G.nodes[node_i]['exec'] * 1.01))
+                G.nodes[node_i]['exec'] = int(np.ceil(G.nodes[node_i]['exec'] * 1.02))
         else:
             for s, t in G.edges:
-                G.edges[s, t]['comm'] = int(np.ceil(G.edges[s, t]['comm'] * 1.01))
+                G.edges[s, t]['comm'] = int(np.ceil(G.edges[s, t]['comm'] * 1.02))
             for node_i in G.nodes:
-                G.nodes[node_i]['exec'] = int(np.ceil(G.nodes[node_i]['exec'] * 0.99))
+                G.nodes[node_i]['exec'] = int(np.ceil(G.nodes[node_i]['exec'] * 0.98))

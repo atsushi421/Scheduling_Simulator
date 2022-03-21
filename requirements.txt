@@ -3,6 +3,8 @@ networkx
 pydot
 pandas
 numpy
+seaborn
+matplotlib
 
 ###### Requirements with Version Specifiers ######`
 # TODO
