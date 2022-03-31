@@ -96,7 +96,9 @@ def main(dag_file_path, alg, num_clusters, num_cores, inout_ratio, ccr, dest_fil
         start_time = time.time()
         htstc = HTSTC(G, P.inout_ratio)
         sched_list = htstc.get_sched_list()
-        S = HTSTCListSchedulerToClusteredProcessor(htstc.G, P, sched_list)
+        for node_i, succ_i in htstc.merge_list:
+            HTSTC.merge_two_nodes(G, node_i, succ_i)
+        S = HTSTCListSchedulerToClusteredProcessor(G, P, sched_list)
         duration = time.time() - start_time
         if(write_duration):
             log_str += f',{duration}'

@@ -40,7 +40,7 @@ class CQGAHEFT(GeneticAlgorithm):
                 G.edges[self._correspond_gene_edge[str(i)]]['comm'] = int(G.edges[self._correspond_gene_edge[str(i)]]['comm'] * self.P.inout_ratio)
 
         qlheft = QLHEFT(G, self.alpha, self.gamma)
-        qlheft.learn(25000)
+        qlheft.learn(30000)
 
         return qlheft.get_sched_list()
 
@@ -59,7 +59,7 @@ class CQGAHEFT(GeneticAlgorithm):
 
         self._calc_fitness()
         for _ in range(self.max_population):
-            offspring = self._elite_select(int(np.ceil(len(self.population) / 2)))  # HACK
+            offspring = self._elite_select(int(np.ceil(len(self.population) / 4)))  # HACK
 
             # crossover
             children = []
@@ -71,8 +71,8 @@ class CQGAHEFT(GeneticAlgorithm):
                 children.append(child2)  
             offspring += children
 
-            # self._mutate()
             self.population = offspring
+            self._mutate()
             self._calc_fitness()
 
         self.duration = time.time() - evolution_start_time

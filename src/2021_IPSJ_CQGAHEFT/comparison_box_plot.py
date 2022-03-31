@@ -72,8 +72,8 @@ def main(source_result_dir, ylabel, xlabel, comparison_base, comparison, format,
     handles, labels = ax.get_legend_handles_labels()
     ax.legend(handles[0:len(algorithm_names)], labels[0:len(algorithm_names)])
     ax.set_xlabel(xlabel)
-    ax.set_ylabel(ylabel)
-    ax.set_ylim(melt_df['value'].min()-0.1, melt_df['value'].max()+0.1)
+    ax.set_ylabel(ylabel + ' [ms]')
+    ax.set_ylim(melt_df['value'].min()-0.05, melt_df['value'].max()+0.05)
 
     # Save
     if(format):

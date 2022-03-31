@@ -40,7 +40,16 @@ class HTSTCListSchedulerToClusteredProcessor(ListSchedulerToClusteredProcessor):
 class HTSTC:
     def __init__(self, dag: nx.DiGraph, inout_ratio: float) -> None:
         self.G = copy.deepcopy(dag)
-        self.inout_ratio = inout_ratio
+        convert_to_ave_comm_dag(self.G, inout_ratio)
+        self.merge_list = []
+
+    @staticmethod
+    def merge_two_nodes(G: nx.DiGraph, node_i: int, succ_i: int) -> None:
+        G.nodes[node_i]['exec'] += (G.nodes[succ_i]['exec']
+                                    + int(G.edges[node_i, succ_i]['comm']))
+        new_succ = list(G.succ[succ_i])
+        G.add_edge(node_i, new_succ[0], comm=G.edges[succ_i, new_succ[0]]['comm'])
+        G.remove_node(succ_i)
 
     def task_clustering(self) -> None:
         perform_clustering_flag = True
@@ -52,12 +61,8 @@ class HTSTC:
                     if(len(self.G.pred[single_succ])==1 and len(self.G.succ[single_succ])==1):
                         if(self.G.edges[node_i, single_succ]['comm'] >= self.G.nodes[single_succ]['exec']):
                             # Perform clustering
-                            self.G.nodes[node_i]['exec'] += (self.G.nodes[single_succ]['exec']
-                                                             + int(self.G.edges[node_i, single_succ]['comm']))
-                            new_succ = list(self.G.succ[single_succ])
-                            self.G.add_edge(node_i, new_succ[0], comm=self.G.edges[single_succ, new_succ[0]]['comm'])
-                            self.G.remove_node(single_succ)
-                            perform_clustering_flag = True
+                            HTSTC.merge_two_nodes(self.G, node_i, single_succ)
+                            self.merge_list.append((node_i, single_succ))
                             break
             perform_clustering_flag = False
 

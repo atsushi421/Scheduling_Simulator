@@ -49,7 +49,7 @@ class GeneticAlgorithm(metaclass=ABCMeta):
         return gene1_after_cross, gene2_after_cross
 
     def _mutate(self) -> None:
-        for chromosome in self.population:
+        for chromosome in self.population[1:]:
             for gene in chromosome.gene_list:
                 if(random.random() < self.mutation_ratio):
                     gene = random.choice(self.gene_options)

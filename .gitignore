@@ -139,3 +139,4 @@ result/
 debug.py
 eval.bash
 figure/
+*.dot

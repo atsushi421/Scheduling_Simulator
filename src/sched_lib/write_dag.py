@@ -1,4 +1,3 @@
-from platform import node
 import networkx as nx
 from networkx.readwrite import json_graph
 
