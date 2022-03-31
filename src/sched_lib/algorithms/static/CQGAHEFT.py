@@ -74,6 +74,10 @@ class CQGAHEFT(GeneticAlgorithm):
             self.population = offspring
             self._mutate()
             self._calc_fitness()
+            
+            # timeout
+            if(time.time() - evolution_start_time > 14400):
+                break
 
         self.duration = time.time() - evolution_start_time
 

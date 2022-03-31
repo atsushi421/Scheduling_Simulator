@@ -85,7 +85,7 @@ def main(dag_file_path, alg, num_clusters, num_cores, inout_ratio, ccr, dest_fil
         S = ListSchedulerToClusteredProcessor(G, P, sched_list)
         S.schedule()
     elif(alg == 'CQGA-HEFT'):
-        cqgaheft = CQGAHEFT(G, 8, 10, 0.0, 1.0, 0.2, P)  # HACK
+        cqgaheft = CQGAHEFT(G, 8, 30, 0.01, 1.0, 0.2, P)  # HACK
         cqgaheft.evolution()
         if(write_duration):
             log_str += f',{cqgaheft.duration}'
