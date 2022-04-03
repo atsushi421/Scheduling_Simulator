@@ -77,7 +77,7 @@ def main(dag_file_path, alg, num_clusters, num_cores, inout_ratio, ccr, dest_fil
         S = ListSchedulerToClusteredProcessor(G, P, sched_list)
         S.schedule()
     elif(alg == 'QL-HEFT'):
-        qlheft = QLHEFTToClusteredProcessor(G, 1.0, 0.2, P.inout_ratio)  # HACK
+        qlheft = QLHEFTToClusteredProcessor(G, 1.0, 0.2, P.inout_ratio)
         qlheft.learn(50000)
         if(write_duration):
             log_str += f',{qlheft.learning_log["duration"]}'
@@ -85,14 +85,14 @@ def main(dag_file_path, alg, num_clusters, num_cores, inout_ratio, ccr, dest_fil
         S = ListSchedulerToClusteredProcessor(G, P, sched_list)
         S.schedule()
     elif(alg == 'CQGA-HEFT'):
-        cqgaheft = CQGAHEFT(G, 8, 30, 0.01, 1.0, 0.2, P)  # HACK
+        cqgaheft = CQGAHEFT(G, 8, 30, 0.01, 1.0, 0.2, P)
         cqgaheft.evolution()
         if(write_duration):
             log_str += f',{cqgaheft.duration}'
         sched_list = cqgaheft.get_sched_list()
         S = ListSchedulerToClusteredProcessor(G, P, sched_list)
         S.schedule()
-    elif(alg == 'HTSTC'):  # HACK
+    elif(alg == 'HTSTC'):
         start_time = time.time()
         htstc = HTSTC(G, P.inout_ratio)
         sched_list = htstc.get_sched_list()

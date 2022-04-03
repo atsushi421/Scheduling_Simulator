@@ -22,19 +22,19 @@ class HTSTCListSchedulerToClusteredProcessor(ListSchedulerToClusteredProcessor):
         normal_scheduler.schedule()
         normal_sched_log = normal_scheduler.sched_log
 
-        # Communication between CCs (debug)
-        for node_i in self.G.nodes:
-            succs = self.G.succ[node_i]
-            for succ_i in succs:
-                if(normal_sched_log[str(node_i)]['allocated_cc_id'] != normal_sched_log[str(succ_i)]['allocated_cc_id']):
-                    # print(f'between CCs edge: ({node_i}, {succ_i})')
-                    # print(f'comm: {self.G.edges[node_i, succ_i]["comm"]}')
-                    # print(f'EST - EFT: {normal_sched_log[str(succ_i)]["start_time"] - normal_sched_log[str(node_i)]["finish_time"]}')
-                    if(normal_sched_log[str(succ_i)]["start_time"] - normal_sched_log[str(node_i)]["finish_time"]
-                            < self.G.edges[node_i, succ_i]["comm"]):
-                        raise UnimplementedError('TODO: Task Duplication')
+        # # Communication between CCs (debug)
+        # for node_i in self.G.nodes:
+        #     succs = self.G.succ[node_i]
+        #     for succ_i in succs:
+        #         if(normal_sched_log[str(node_i)]['allocated_cc_id'] != normal_sched_log[str(succ_i)]['allocated_cc_id']):
+        #             print(f'between CCs edge: ({node_i}, {succ_i})')
+        #             print(f'comm: {self.G.edges[node_i, succ_i]["comm"]}')
+        #             print(f'EST - EFT: {normal_sched_log[str(succ_i)]["start_time"] - normal_sched_log[str(node_i)]["finish_time"]}')
+        #             if(normal_sched_log[str(succ_i)]["start_time"] - normal_sched_log[str(node_i)]["finish_time"]
+        #                     < self.G.edges[node_i, succ_i]["comm"]):
+        #                 raise UnimplementedError('TODO: Task Duplication')
 
-        self.schedule()  # HACK
+        self.schedule()
 
 
 class HTSTC:

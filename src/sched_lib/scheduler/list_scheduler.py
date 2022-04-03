@@ -106,7 +106,7 @@ class ListSchedulerToClusteredProcessor(ListScheduler):
                 self._wait_one()
             self._allocate_task(head, dest_cc_id, dest_core_id)
 
-    def dump_log_to_json(self, filename: str) -> None:  # HACK
+    def dump_log_to_json(self, filename: str) -> None:
         format_log = {'coreNum': self.P.num_of_clusters * self.P.num_of_cores,
                       'makespan': self.get_makespan(),
                       'taskSet': []}

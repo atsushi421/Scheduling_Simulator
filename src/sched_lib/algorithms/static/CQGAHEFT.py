@@ -59,7 +59,7 @@ class CQGAHEFT(GeneticAlgorithm):
 
         self._calc_fitness()
         for _ in range(self.max_population):
-            offspring = self._elite_select(int(np.ceil(len(self.population) / 4)))  # HACK
+            offspring = self._elite_select(int(np.ceil(len(self.population) / 4)))
 
             # crossover
             children = []
