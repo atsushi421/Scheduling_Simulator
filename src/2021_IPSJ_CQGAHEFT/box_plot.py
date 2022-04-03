@@ -2,6 +2,7 @@ import argparse
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.ticker as tkr
 import seaborn as sns
 
 from typing import Tuple
@@ -42,7 +43,7 @@ def main(source_result_dir, ylabel, xlabel, normalized_by_median, format, dest_d
     # Initialize variables
     files = os.listdir(source_result_dir)
     xaxis_labels = [f for f in files if os.path.isdir(os.path.join(source_result_dir, f))]
-    xaxis_labels = [str(fv) for fv in sorted([float(v) for v in xaxis_labels])]
+    xaxis_labels = [str(fv) for fv in sorted([int(v) for v in xaxis_labels])]
     algorithm_names = [os.path.splitext(filename)[0] for filename in os.listdir(f'{source_result_dir}/{xaxis_labels[0]}')]
 
     # Create source dataframe
@@ -75,7 +76,16 @@ def main(source_result_dir, ylabel, xlabel, normalized_by_median, format, dest_d
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
     plt.subplots_adjust(hspace=0.5)
-    sns.boxplot(x='variable', y='value', data=source_df, hue='species', showfliers=True, palette='Greys_r', ax=ax)
+    
+    PROPS = {
+        'boxprops':{'facecolor':'none', 'edgecolor':'red'},
+        'medianprops':{'color':'green'},
+        'whiskerprops':{'color':'blue'},
+        'capprops':{'color':'yellow'}
+    }
+    
+    sns.boxplot(x='variable', y='value', data=source_df, hue='species', showfliers=True, ax=ax, palette='Greys_r')
+    ax.yaxis.set_major_formatter(tkr.FuncFormatter(lambda y, p: "{:,}".format(int(y))))
     handles, labels = ax.get_legend_handles_labels()
     ax.legend(handles[0:len(algorithm_names)], labels[0:len(algorithm_names)])
     ax.set_xlabel(xlabel)
